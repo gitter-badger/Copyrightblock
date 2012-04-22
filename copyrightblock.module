@@ -1,0 +1,100 @@
+<?php
+
+ /**
+ * @file
+ * Copyright information in a block.
+ * @author Joshua Davis / Millenium Enterprise Corporation
+ */
+ 
+ function copyrightblock_help($path, $arg) {
+ 	switch ($path) {
+ 		case "admin/help#copyrightblock":
+ 			return '<p>' . t("Displays a copyright info block") . '</p>';
+ 			break;
+ 	}
+ }
+
+/**
+ * Implements hook_block_info().
+ */
+
+ function copyrightblock_block_info() {
+ 	$blocks['copyrightblock'] = array(
+ 		'info' => t('Copyright info'),
+ 		'cache' => DRUPAL_CACHE_PER_ROLE,
+ 	);
+ 	return $blocks;
+ 	}
+ 	
+/**
+ * Returns a string of the copyright name.
+ */ 	
+ 	
+ function copyrightblock_buildresults() {
+ 	$prefix = "Copyright &copy; ";
+ 	$date = date('Y') . ' ';
+  	$copyright_holder = variable_get('copyright_owner',variable_get('site_name',''));
+ 	$postfix = ", all rights reserved";
+ 	
+ 	$final_text = '<p>' . $prefix . $date . $copyright_holder . $postfix . '.</p>';
+ 	
+ 	return $final_text;
+ }
+
+/**
+ * Implements hook_block_view().
+ */ 
+ 
+ function copyrightblock_block_view($delta = '') {
+ 		$result = copyrightblock_buildresults();
+ 		
+ 		switch($delta) {
+ 			case 'copyrightblock':
+ 				$block['subject'] = t('Copyright');
+ 				$block['content'] = $result;
+ 			}
+ 			
+ 		return $block;
+ }
+ 
+/**
+ * Implements hook_menu().
+ */ 
+
+ function copyrightblock_menu() {
+ 	$items = array();
+ 	
+ 	$items['admin/config/content/copyrightblock'] = array(
+ 		'title' => 'Copyrightblock',
+ 		'description' => 'Configuration for the Copyrightblock module',
+ 		'page callback' => 'drupal_get_form',
+ 		'page arguments' => array('copyrightblock_form'),
+ 		'access arguments' => array('access administration pages'),
+ 		'type' => MENU_NORMAL_ITEM,
+ 	);
+ 	
+ 	return $items;
+ 	}
+ 	
+/**
+ * Implements hook_form().
+ */  	
+ 	
+ function copyrightblock_form($form, &$form_state) {
+ 	
+ 	//Set a field to enable custom copyright owner name
+ 	
+ 	$form['copyright_owner'] = array(
+ 		'#type' => 'textfield',
+ 		'#title' => t('Copyright owner'),
+ 		'default_value' => 'None',
+ 		'#size' => 40,
+ 		'#max-length' => 300,
+ 		'#description' => t('The entity which owns the copyright'),
+ 		'#required' => TRUE,
+ 		);
+ 		
+ 		return system_settings_form($form);
+ }
+ 
+?>

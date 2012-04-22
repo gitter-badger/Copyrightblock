@@ -1,0 +1,3 @@
+name = Copyrightblock
+description = Displays copyright text along with the current year
+core = 7.x
